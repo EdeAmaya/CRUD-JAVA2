@@ -5,6 +5,7 @@ import Modelo.Producto;
 import Vista.frmProductos;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.JTable;
 
 
 
@@ -17,6 +18,10 @@ public class ctrlProducto implements MouseListener{
         this.vista = Vista;
         this.modelo = Modelo;
         vista.btnGuardar.addMouseListener(this);
+        
+        
+        vista.jtbProductos.addMouseListener(this);
+        modelo.Mostrar(vista.jtbProductos);
                
     }
 
@@ -27,7 +32,8 @@ public class ctrlProducto implements MouseListener{
        modelo.setPrecio(Double.parseDouble( vista.txtPrecio.getText()));
        modelo.setCategoria(vista.txtCategoria.getText());
        modelo.Guardar();
-       }
+       modelo.Mostrar(vista.jtbProductos);
+         }
     }
 
     @Override

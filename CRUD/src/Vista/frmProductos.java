@@ -4,6 +4,9 @@
  */
 package Vista;
 
+import Controlador.ctrlProducto;
+import Modelo.Producto;
+
 /**
  *
  * @author Estudiante
@@ -15,6 +18,14 @@ public class frmProductos extends javax.swing.JFrame {
      */
     public frmProductos() {
         initComponents();
+    }
+    
+    public static void initProductos(){
+        Producto modelo = new Producto();
+        frmProductos vista = new frmProductos();
+        ctrlProducto controlador = new ctrlProducto(vista, modelo);
+        
+        vista.setVisible(true);
     }
 
     /**
@@ -153,7 +164,7 @@ public class frmProductos extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new frmProductos().setVisible(true);
+               initProductos();
             }
         });
     }
