@@ -3,9 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Modelo;
+import Vista.frmProductos;
 import java.sql.*;
 import java.util.UUID;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -94,5 +96,114 @@ public class Producto {
         } catch (Exception e) {
             System.out.println("Este es el error en el modelo, metodo mostrar " + e);
         }
+        
+        
     }
+    
+    public void Eliminar(JTable tabla) {
+        //Creamos una variable igual a ejecutar el método de la clase de conexión
+        Connection conexion = ClaseConexion.getConexion();
+
+        //obtenemos que fila seleccionó el usuario
+        int filaSeleccionada = tabla.getSelectedRow();
+        //Obtenemos el id de la fila seleccionada
+
+        String miId = tabla.getValueAt(filaSeleccionada, 0).toString();
+        //borramos 
+        try {
+            PreparedStatement deleteEstudiante = conexion.prepareStatement("delete from tbProductos where UUID_producto = ?");
+            deleteEstudiante.setString(1, miId);
+            deleteEstudiante.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("este es el error metodo de eliminar" + e);
+        }
+        
+    }
+    
+    
+    public void Actualizar(JTable tabla) {
+        //Creamos una variable igual a ejecutar el método de la clase de conexión
+        Connection conexion = ClaseConexion.getConexion();
+
+        //obtenemos que fila seleccionó el usuario
+        int filaSeleccionada = tabla.getSelectedRow();
+
+        if (filaSeleccionada != -1) {
+            //Obtenemos el id de la fila seleccionada
+            String miUUId = tabla.getValueAt(filaSeleccionada, 0).toString();
+
+            try {
+                //Ejecutamos la Query
+                String sql = "update tbProductos set nombre = ?, precio  = ?, categoria  = ? where UUID_producto  = ?";
+                PreparedStatement updatepollo = conexion.prepareStatement(sql);
+
+                updatepollo.setString(1, getNombre());
+                updatepollo.setDouble(2, getPrecio());
+                updatepollo.setString(3, getCategoria());
+                updatepollo.setString(4, miUUId);
+                updatepollo.executeUpdate();
+
+            } catch (Exception e) {
+                System.out.println("este es el error en el metodo de actualizar" + e);
+            }
+        } else {
+            System.out.println("no");
+        }
+    }
+    
+    
+     public void cargarDatosTabla(frmProductos vista) {
+        // Obtén la fila seleccionada 
+        int filaSeleccionada = vista.jtbProductos.getSelectedRow();
+
+        // Debemos asegurarnos que haya una fila seleccionada antes de acceder a sus valores
+        if (filaSeleccionada != -1) {
+            String UUIDDeTb = vista.jtbProductos.getValueAt(filaSeleccionada, 0).toString();
+            String NombreDeP = vista.jtbProductos.getValueAt(filaSeleccionada, 1).toString();
+            String PrecioP = vista.jtbProductos.getValueAt(filaSeleccionada, 2).toString();
+            String CategoriaP = vista.jtbProductos.getValueAt(filaSeleccionada, 3).toString();
+
+            // Establece los valores en los campos de texto
+            vista.txtNombre.setText(NombreDeP);
+            vista.txtPrecio.setText(PrecioP);
+            vista.txtCategoria.setText(CategoriaP);
+        }
+    }
+     
+      public void Buscar(JTable tabla, JTextField miTextField) {
+        //Creamos una variable igual a ejecutar el método de la clase de conexión
+        Connection conexion = ClaseConexion.getConexion();
+
+        //Definimos el modelo de la tabla
+        DefaultTableModel modelo = new DefaultTableModel();
+        modelo.setColumnIdentifiers(new Object[]{"UUID_producto", "nombre", "precio", "categoria"});
+        try {
+            String sql = "SELECT * FROM tbProductos WHERE nombre LIKE ? || '%' or categoria LIKE ? || '%'" ;
+            PreparedStatement deleteEstudiante = conexion.prepareStatement(sql);
+            deleteEstudiante.setString(1, miTextField.getText());
+            deleteEstudiante.setString(2, miTextField.getText());
+            ResultSet rs = deleteEstudiante.executeQuery();
+
+            while (rs.next()) {
+                //Llenamos el modelo por cada vez que recorremos el resultSet
+                modelo.addRow(new Object[]{rs.getString("UUID_producto"), rs.getString("nombre"), rs.getDouble("precio"), rs.getString("categoria")});
+            }
+
+            
+            //Asignamos el nuevo modelo lleno a la tabla
+            tabla.setModel(modelo);
+            tabla.getColumnModel().getColumn(0).setMinWidth(0);
+            tabla.getColumnModel().getColumn(0).setMaxWidth(0);
+            tabla.getColumnModel().getColumn(0).setWidth(0);
+        } catch (Exception e) {
+            System.out.println("Este es el error en el modelo, metodo de buscar " + e);
+        }
+    }
+    
+    public void Limpiar(frmProductos vista){
+    vista.txtNombre.setText("");
+    vista.txtPrecio.setText("");
+    vista.txtCategoria.setText("");
+        
+        }
 }
